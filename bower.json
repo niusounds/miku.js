@@ -1,7 +1,8 @@
 {
-  "name": "miku",
+  "name": "miku.js",
   "main": "miku.js",
   "version": "0.0.1",
+  "homepage": "https://github.com/ejeinc/miku.js",
   "authors": [
     "matsuo <matsuo@eje-c.com>"
   ],
