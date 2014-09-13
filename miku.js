@@ -65,7 +65,14 @@
         var miku = new Miku(midi);
 
         // auto detect input
-        midi.inputs().some(function(input) {
+        var inputs = [];
+        if (midi.inputs.values) {
+          // TODO
+        } else {
+          inputs = midi.inputs();
+        }
+
+        inputs.some(function(input) {
           if (/NSX-39/.test(input.name)) {
             miku.input = input;
             input.onmidimessage = miku.onMIDIMessage.bind(miku);
@@ -73,13 +80,28 @@
           }
         });
 
+        if (!miku.input) {
+          miku.input = inputs[0];
+        }
+
         // auto detect output
-        midi.outputs().some(function(output) {
+        var outputs = [];
+        if (midi.outputs.values) {
+          // TODO
+        } else {
+          outputs = midi.outputs();
+        }
+
+        outputs.some(function(output) {
           if (/NSX-39/.test(output.name)) {
             miku.output = output;
             return true;
           }
         });
+
+        if (!miku.output) {
+          miku.output = outputs[0];
+        }
 
         Miku.instance = miku;
         resolve(miku);
@@ -122,6 +144,8 @@
    * Send note off
    */
   Miku.prototype.noteOff = function(noteNumber, velocity, timestamp) {
+    if (!this.output) return this;
+
     this.output.send([0x80 | this.channel, noteNumber, velocity], timestamp);
     this.emit('noteOff', noteNumber, velocity);
     return this;
@@ -131,6 +155,8 @@
    * Send note on
    */
   Miku.prototype.noteOn = function(noteNumber, velocity, timestamp) {
+    if (!this.output) return this;
+
     this.output.send([0x90 | this.channel, noteNumber, velocity], timestamp);
     this.emit('noteOn', noteNumber, velocity);
     return this;
@@ -140,8 +166,22 @@
    * Send control change
    */
   Miku.prototype.controlChange = function(controller, value, timestamp) {
+    if (!this.output) return this;
+
     this.output.send([0xb0 | this.channel, controller, value], timestamp);
     this.emit('controlChange', controller, value);
+    return this;
+  };
+
+
+  /**
+   * Send control change
+   */
+  Miku.prototype.programChange = function(program, timestamp) {
+    if (!this.output) return this;
+
+    this.output.send([0xc0 | this.channel, program], timestamp);
+    this.emit('programChange', program);
     return this;
   };
 
@@ -149,6 +189,8 @@
    * Send pitch bend
    */
   Miku.prototype.pitchBend = function(bend, timestamp) {
+    if (!this.output) return this;
+
     this.output.send([0xE0 | this.channel, bend & 0x7F, bend >> 7 & 0x7F], timestamp);
     this.emit('pitchBend', bend);
     return this;
@@ -158,6 +200,8 @@
    * Send all notes off
    */
   Miku.prototype.allNotesOff = function(timestamp) {
+    if (!this.output) return this;
+
     this.output.send([0xb0 | this.channel, 0x7b, 0x00], timestamp);
     return this;
   };
@@ -166,6 +210,8 @@
    * Send all sound off
    */
   Miku.prototype.allSoundOff = function(timestamp) {
+    if (!this.output) return this;
+    
     this.output.send([0xb0 | this.channel, 0x78, 0x00], timestamp);
     return this;
   };
