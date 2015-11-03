@@ -42,12 +42,12 @@
     }
 
     function noteOn(num) {
-      miku.noteOn(num, 64);
+      miku.noteOn(num, 64, 0);
 
       clearTimeout(timer);
 
       timer = setTimeout(function() {
-        miku.noteOff(num, 0);
+        miku.noteOff(num, 0, 0);
       }, 1000)
     }
 
