@@ -12,10 +12,10 @@ Miku.init(function(miku) {
   miku.lyrics('こ', 'ん', 'に', 'ち', 'わ');
 
   // play
-  miku.noteOn(69, 127);
+  miku.noteOn(69, 127, 0);
 
   // stop
-  miku.noteOff(69, 0);
+  miku.noteOff(69, 0, 0);
 });
 ```
 
@@ -43,8 +43,10 @@ miku.lyrics('み t ddd く');
 
 ```JavaScript
 var noteNumber = 60,
-    velocity   = 64;
-miku.noteOn(noteNumber, velocity);
+    velocity   = 64,
+    timestamp  = 0; // play immediately
+
+miku.noteOn(noteNumber, velocity timestamp);
 
 ...
 
