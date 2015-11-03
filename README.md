@@ -43,14 +43,13 @@ miku.lyrics('み t ddd く');
 
 ```JavaScript
 var noteNumber = 60,
-    velocity   = 64,
-    timestamp  = 0; // play immediately
+    velocity   = 64;
 
-miku.noteOn(noteNumber, velocity timestamp);
+miku.noteOn(noteNumber, velocity, 0);
 
 ...
 
-miku.noteOff(noteNumber, velocity);
+miku.noteOff(noteNumber, velocity, 0);
 ```
 
 ### Send other MIDI message
