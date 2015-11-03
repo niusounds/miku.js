@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html ng-app="App">
+
+<head>
+  <title>miku.js - demo</title>
+</head>
+
+<body ng-controller="Main" ng-keydown="noteOn($event)" ng-keyup="noteOff($event)">
+  <label for="lyrics">Lyrics</label>
+  <textarea name="lyrics" id="lyrics" cols="30" rows="10" ng-model="lyricsValue" ng-change="lyrics(lyricsValue)"></textarea>
+  <br>
+  <label for="pb">Pitch bend</label>
+  <input id="pb" type="range" ng-model="pitchBendValue" ng-change="pitchBend(pitchBendValue)" max="16384">
+  <br>
+  <label for="md">Modulation</label>
+  <input id="md" type="range" ng-model="modulationValue" ng-change="modulation(modulationValue)" max="255x">
+  <br>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  <script src="miku.js"></script>
+  <script>
+  var keyMap = {
+    65: 56,
+    90: 57,
+    83: 58,
+    88: 59,
+    67: 60,
+    70: 61,
+    86: 62,
+    71: 63,
+    66: 64,
+    78: 65,
+    74: 66,
+    77: 67,
+    75: 68,
+    188: 69,
+    76: 70,
+    190: 71,
+    191: 72,
+    222: 73,
+  };
+  angular.module('App', [])
+    .controller('Main', function($scope) {
+
+      $scope.lyricsValue = 'こ ん に ち わ よ ろ し く ね';
+
+      var miku, playingNote;
+
+      Miku.init().then(function(instance) {
+
+        miku = instance;
+        miku.lyrics($scope.lyricsValue);
+
+        $scope.miku = miku;
+        $scope.$apply();
+      });
+
+      $scope.pitchBend = function(value) {
+        miku.pitchBend(value, 0);
+      };
+
+      $scope.modulation = function(value) {
+        miku.controlChange(1, value, 0);
+      };
+
+      $scope.lyrics = function(value) {
+        miku.lyrics(value);
+      };
+
+      $scope.noteOn = function(event) {
+        // console.log(event);
+
+        var midiNote = keyEventToMIDI(event);
+        if (midiNote && playingNote !== midiNote) {
+          playingNote = midiNote;
+          miku.noteOn(midiNote, 64, 0);
+        }
+      };
+
+      $scope.noteOff = function(event) {
+
+        var midiNote = keyEventToMIDI(event);
+        if (midiNote) {
+          playingNote = null;
+          miku.noteOff(midiNote, 64, 0);
+        }
+      };
+    });
+
+  function keyEventToMIDI(event) {
+
+    var midiNote = keyMap[event.keyCode];
+    if (!midiNote) return null;
+
+    if (event.shiftKey) {
+      midiNote += 12;
+    }
+
+    if (event.ctrlKey) {
+      midiNote += 1;
+    }
+
+    return midiNote;
+  }
+  </script>
+</body>
+
+</html>
