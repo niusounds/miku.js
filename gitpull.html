@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>miku.js - demo</title>
+</head>
+
+<body>
+  <button onclick="gitPull()">git pull</button>
+  <script src="miku.js"></script>
+  <script>
+  var miku, running;
+
+  Miku.init(function(instance) {
+    miku = instance;
+    miku.lyrics('ぎ と ぷ る');
+  });
+
+  function gitPull() {
+
+    if (running) return;
+    running = true;
+
+    noteOn(74, 300)
+      .then(function() {
+        return wait(300);
+      }).then(function() {
+        return noteOn(74, 300)
+      }).then(function() {
+        return noteOn(76, 300)
+      }).then(function() {
+        return noteOn(72, 1000)
+      }).then(function() {
+        running = false;
+      });
+  }
+
+  function noteOn(num, length) {
+    return new Promise(function(resolve, reject) {
+
+      miku.noteOn(num, 64, 0);
+
+      setTimeout(function() {
+        miku.noteOff(num, 0, 0);
+        resolve();
+      }, length);
+
+    });
+  }
+
+  function wait(length) {
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        resolve();
+      }, length);
+    });
+  }
+  </script>
+</body>
+
+</html>

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-
 <html>
+
 <head>
   <title>miku.js - demo</title>
 </head>
-<body>
 
+<body>
   <input type="text" id="lyrics" value="こ ん に ち わ">
   <button onclick="setLyrics()">Set</button>
-
   <button onclick="noteOn(60)">C</button>
   <button onclick="noteOn(62)">D</button>
   <button onclick="noteOn(64)">E</button>
@@ -16,63 +15,67 @@
   <button onclick="noteOn(67)">G</button>
   <button onclick="noteOn(69)">A</button>
   <button onclick="noteOn(71)">B</button>
-
+  <label>pitch</label>
+  <input type="range" onchange="pitchBend(this.value)" max="16384">
   <script src="miku.js"></script>
   <script>
-    var miku, timer;
+  var miku, timer;
 
-    Miku.init(function(instance) {
-      miku = instance;
-      setLyrics();
+  Miku.init(function(instance) {
+    miku = instance;
+    setLyrics();
 
-      miku.on('noteOn', function(noteNum, velocity) {
-        console.log('note on', noteNum, velocity);
-      }).on('pitchBend', function(bend1, bend2) {
-        console.log('bend', bend1, bend2);
-      }).on('noteOff', function(noteNum, velocity) {
-        console.log('note off', noteNum, velocity);
-      }).on('sysEx', function(data) {
-        console.log('sys ex', data);
-      });
+    miku.on('noteOn', function(noteNum, velocity) {
+      console.log('note on', noteNum, velocity);
+    }).on('pitchBend', function(bend1, bend2) {
+      console.log('bend', bend1, bend2);
+    }).on('noteOff', function(noteNum, velocity) {
+      console.log('note off', noteNum, velocity);
+    }).on('sysEx', function(data) {
+      console.log('sys ex', data);
     });
+  });
 
-    function setLyrics() {
-      var lyrics = document.getElementById('lyrics').value
-      miku.lyrics(lyrics);
+  function setLyrics() {
+    var lyrics = document.getElementById('lyrics').value
+    miku.lyrics(lyrics);
+  }
+
+  function noteOn(num) {
+    miku.noteOn(num, 64, 0);
+
+    clearTimeout(timer);
+
+    timer = setTimeout(function() {
+      miku.noteOff(num, 0, 0);
+    }, 1000)
+  }
+
+  function pitchBend(value){
+    miku.pitchBend(value, 0);
+  }
+
+  // send pitch bend test
+  var pitch = 8192;
+  document.addEventListener('keydown', function(e) {
+    switch (e.keyCode) {
+      case 37:
+        miku.controlChange(1, 0);
+        break;
+      case 38:
+        pitch += 128;
+        miku.pitchBend(pitch);
+        break;
+      case 39:
+        miku.controlChange(1, 127);
+        break;
+      case 40:
+        pitch -= 128;
+        miku.pitchBend(pitch);
+        break;
     }
-
-    function noteOn(num) {
-      miku.noteOn(num, 64, 0);
-
-      clearTimeout(timer);
-
-      timer = setTimeout(function() {
-        miku.noteOff(num, 0, 0);
-      }, 1000)
-    }
-
-    // send pitch bend test
-    var pitch = 8192;
-    document.addEventListener('keydown', function(e) {
-      switch (e.keyCode) {
-        case 37:
-          miku.controlChange(1, 0);
-          break;
-        case 38:
-          pitch += 128;
-          miku.pitchBend(pitch);
-          break;
-        case 39:
-          miku.controlChange(1, 127);
-          break;
-        case 40:
-          pitch -= 128;
-          miku.pitchBend(pitch);
-          break;
-      }
-    });
-
-
+  });
   </script>
 </body>
+
 </html>
