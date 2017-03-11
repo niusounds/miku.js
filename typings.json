@@ -1,0 +1,7 @@
+{
+  "name": "miku",
+  "dependencies": {},
+  "globalDependencies": {
+    "webmidi": "registry:dt/webmidi#2.0.0+20170223151516"
+  }
+}
