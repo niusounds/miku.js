@@ -3,20 +3,23 @@ miku.js
 
 JavaScript library for using NSX-39 with Web MIDI.
 
+[DEMO](demo.html)
+
 ## How to use
 
 ```JavaScript
 // get instance
-Miku.init(function(miku) {
-  // set lyrics
-  miku.lyrics('こ', 'ん', 'に', 'ち', 'わ');
+Miku.init()
+  .then(miku => {
+    // set lyrics
+    miku.lyrics('こ', 'ん', 'に', 'ち', 'わ');
 
-  // play
-  miku.noteOn(69, 127, 0);
+    // play
+    miku.noteOn(69, 127, 0);
 
-  // stop
-  miku.noteOff(69, 0, 0);
-});
+    // stop
+    miku.noteOff(69, 0, 0);
+  });
 ```
 
 ## API
@@ -36,18 +39,19 @@ miku.lyrics('あ い う え お');
 miku.lyrics('こ,ん,に,ち,わ');
 
 // unknown character is ignored
-miku.lyrics('み t ddd く');
+miku.lyrics('み t ddd く'); // Same as miku.lyrics('み く')
 ```
 
 ### Play note
 
 ```JavaScript
-var noteNumber = 60,
-    velocity   = 64;
+let noteNumber = 60;
+let velocity   = 64;
 
 miku.noteOn(noteNumber, velocity, 0);
 
 ...
+// Some seconds after
 
 miku.noteOff(noteNumber, velocity, 0);
 ```
@@ -67,19 +71,19 @@ miku.controlChange(1, 127);
 These events are also emitted from MIDI Input.
 
 ```JavaScript
-miku.on('noteOn', function(noteNum, velocity) {
+miku.on('noteOn', (noteNum, velocity) => {
   console.log('Note on', noteNum, velocity);
 });
 
-miku.on('noteOff', function(noteNum, velocity) {
+miku.on('noteOff', (noteNum, velocity) => {
   console.log('Note off', noteNum, velocity);
 });
 
-miku.on('pitchBend', function(value) {
+miku.on('pitchBend', (value) => {
   console.log('Pitch bend', value);
 });
 
-miku.on('sysEx', function(dataArray) {
+miku.on('sysEx', (dataArray) => {
   console.log('sys ex', dataArray);
 });
 ```
